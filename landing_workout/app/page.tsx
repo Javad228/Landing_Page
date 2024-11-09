@@ -12,7 +12,6 @@ import {
   Gem,
   Mail,
   Gift,
-  User,
   CircleDollarSign 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,9 +21,9 @@ import { Input } from "@/components/ui/input";
 export default function Component() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const signupRef = useRef(null);
-
-  const handleSubmit = async (e) => {
+  const signupRef = useRef<HTMLDivElement | null>(null);
+  
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     setIsSubmitting(true);
     
@@ -61,7 +60,6 @@ export default function Component() {
   const handleScrollToSignup = () => {
     signupRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
   // Parallax effect using Framer Motion
   const { scrollY } = useScroll();
 

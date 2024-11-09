@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowRight,
   Sword,
@@ -11,71 +12,98 @@ import {
   Gem,
   Mail,
   Gift,
+  User,
+  CircleDollarSign 
 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import {
-  motion,
-  useViewportScroll,
-  useTransform,
-} from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
 
 export default function Component() {
-  const [theme, setTheme] = useState("dark");
   const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const signupRef = useRef(null);
 
-  // Parallax effect using Framer Motion
-  const { scrollY } = useViewportScroll();
-
-  // Calculate the amount to move the image up
-  const [imageMoveUp, setImageMoveUp] = useState(0);
-  const [scrollRange, setScrollRange] = useState(0);
-  const [imageContainerHeight, setImageContainerHeight] = useState(0);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const vh = window.innerHeight;
-      const scrollHeight = document.documentElement.scrollHeight;
-      const totalScrollable = scrollHeight - vh;
-
-      // Adjust speed based on viewport height
-      const speedFactor = vh < 500 ? 0.5 : vh < 700 ? 0.7 : 1;
-      const adjustedImageMoveUp = vh * speedFactor + 55;
-
-      setImageMoveUp(adjustedImageMoveUp);
-      setScrollRange(totalScrollable);
-      setImageContainerHeight(Math.ceil(vh * 2.1));
-    }
-  }, []);
-
-
-  // Create the parallax effect
-  const y = useTransform(scrollY, [0, scrollRange], [0, -imageMoveUp]);
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Email submitted:", email);
-    setEmail("");
-    alert(
-      "Thanks for signing up! We'll notify you when the game launches and send you exclusive gifts!"
-    );
+    setIsSubmitting(true);
+    
+    
+    try {
+      // Replace your-email@example.com with your actual email
+      const response = await fetch('https://formsubmit.co/loggerwork3@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          subject: "New FitQuest RPG Signup!",
+          message: `New signup from: ${email}`
+        })
+      });
+
+      if (response.ok) {
+        setEmail('');
+        alert('Thanks for signing up! We\'ll notify you when the game launches and send you exclusive gifts!');
+      } else {
+        throw new Error('Failed to submit');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Sorry, there was an error signing up. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  const handleScrollToSignup = () => {
+    signupRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Parallax effect using Framer Motion
+  const { scrollY } = useScroll();
+
+  // Adjust the parallax effect
+  const imageMoveUp = 370; // Adjust this value as needed
+  const scrollRangeStart = 0;
+  const scrollRangeEnd = 1000; // Adjust based on your content height
+
+  // Create the parallax effect for the image inside the phone
+  const y = useTransform(
+    scrollY,
+    [scrollRangeStart, scrollRangeEnd],
+    [0, -imageMoveUp]
+  );
+
+
   return (
-    <div className={`relative flex flex-col min-h-screen ${theme}`}>
-      {/* Parallax Image on the Right Side */}
-      <motion.div
-        style={{ y, height: imageContainerHeight }}
-        className="fixed top-0 right-0 w-1/4 z-10 overflow-hidden"
-      >
-        <Image
-          src="/images/Screenshot.jpg"
-          alt="App Screenshot"
-          layout="fill"
-          objectFit="contain"
-          objectPosition="top center"
-        />
-      </motion.div>
+    <div className="relative flex flex-col min-h-screen bg-gray-900 text-white">
+      {/* Floating Phone Container */}
+      <div className="fixed bottom-10 right-10 w-[200px] h-[400px] z-50 hidden md:block">
+        {/* Phone Mockup */}
+        <div className="relative w-full h-full bg-black rounded-[40px] border-8 border-gray-800 shadow-xl">
+          {/* Notch */}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-5 bg-gray-800 rounded-b-lg "></div>
+          {/* Parallax Image */}
+          <div className="relative w-full h-full overflow-hidden rounded-[inherit]">
+            <motion.div
+              style={{ y }}
+              className="absolute top-0 left-0 w-full h-full"
+            >
+              <Image
+                src="/images/Screenshot.jpg"
+                alt="App Screenshot"
+                width={250}
+                height={700}
+                className="w-full h-auto object-cover"
+              />
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
 
       {/* Rest of the content */}
       <header className="px-4 lg:px-6 h-14 flex items-center border-b border-gray-700 bg-gray-900 z-20">
@@ -94,12 +122,6 @@ export default function Component() {
           </Link>
           <Link
             className="text-sm font-medium text-gray-300 hover:text-white hover:underline underline-offset-4"
-            href="#gameplay"
-          >
-            Gameplay
-          </Link>
-          <Link
-            className="text-sm font-medium text-gray-300 hover:text-white hover:underline underline-offset-4"
             href="#signup"
           >
             Sign Up
@@ -108,10 +130,7 @@ export default function Component() {
       </header>
 
       {/* Main content */}
-      <main
-        className="flex-1 bg-gray-900 text-white"
-        style={{ marginRight: "25%" }}
-      >
+      <main className="flex-1 bg-gray-900 text-white">
         {/* Hero Section */}
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-gradient-to-r from-purple-900 via-indigo-800 to-blue-900">
           <div className="container px-4 md:px-6">
@@ -126,22 +145,21 @@ export default function Component() {
                   FitQuest RPG: Coming Soon
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl">
-                  Prepare for an epic journey. Sign up now to be notified when
-                  our legendary adventure begins!
+                  Sign up now to receive exclusive updates and be notified when FitQuest RPG launches!!
                 </p>
                 <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl font-bold">
                   100% Free, No Ads Ever!
                 </p>
               </div>
               <div className="space-x-4">
-                <Button
-                  className="bg-purple-600 text-white hover:bg-purple-700"
-                  href="#signup"
-                >
-                  Get Notified
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
+              <Button
+                className="bg-purple-600 text-white hover:bg-purple-700"
+                onClick={handleScrollToSignup}
+              >
+                Get Notified
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
             </motion.div>
           </div>
         </section>
@@ -153,6 +171,7 @@ export default function Component() {
               Upcoming Features
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Existing Features */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="flex flex-col items-center space-y-2 p-6 bg-gray-800 rounded-lg shadow-lg"
@@ -164,6 +183,7 @@ export default function Component() {
                   ever-changing dungeons.
                 </p>
               </motion.div>
+
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="flex flex-col items-center space-y-2 p-6 bg-gray-800 rounded-lg shadow-lg"
@@ -175,6 +195,7 @@ export default function Component() {
                   economy.
                 </p>
               </motion.div>
+
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="flex flex-col items-center space-y-2 p-6 bg-gray-800 rounded-lg shadow-lg"
@@ -186,75 +207,52 @@ export default function Component() {
                   artifacts.
                 </p>
               </motion.div>
+
+              {/* New Features */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex flex-col items-center space-y-2 p-6 bg-gray-800 rounded-lg shadow-lg"
+              >
+                <Sword className="h-12 w-12 text-red-500" />
+                <h3 className="text-xl font-bold">PvP Dungeons</h3>
+                <p className="text-center text-gray-400">
+                  Engage in thrilling battles with other players, fighting to be the last one standing.
+                </p>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex flex-col items-center space-y-2 p-6 bg-gray-800 rounded-lg shadow-lg"
+              >
+                <CircleDollarSign className="h-12 w-12 text-green-500" />
+                <h3 className="text-xl font-bold">Track Workouts</h3>
+                <p className="text-center text-gray-400">
+                  Track your real-life workouts to level up your in-game character and unlock new abilities.
+                </p>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex flex-col items-center space-y-2 p-6 bg-gray-800 rounded-lg shadow-lg"
+              >
+                <Gift className="h-12 w-12 text-purple-400" />
+                <h3 className="text-xl font-bold">500+ Unique Items</h3>
+                <p className="text-center text-gray-400">
+                  Collect over 500 items, including rare gear and powerful artifacts to enhance your character.
+                </p>
+              </motion.div>
             </div>
           </div>
         </section>
 
+
         {/* Gameplay Section */}
-        <section
-          id="gameplay"
-          className="w-full py-12 md:py-24 lg:py-32 bg-gray-800"
-        >
-          <div className="container px-4 md:px-6">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">
-              Immersive Gameplay
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Image
-                  src="/placeholder.svg?height=400&width=400"
-                  width={400}
-                  height={400}
-                  alt="FitQuest RPG Gameplay Concept"
-                  className="rounded-lg object-cover"
-                />
-              </motion.div>
-              <div className="space-y-4">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  <h3 className="text-2xl font-bold">Dynamic World</h3>
-                  <p className="text-gray-300">
-                    Explore a vast, ever-changing landscape filled with quests,
-                    monsters, and hidden treasures.
-                  </p>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                >
-                  <h3 className="text-2xl font-bold">Player Interaction</h3>
-                  <p className="text-gray-300">
-                    Form alliances, engage in PvP battles, or attempt to steal
-                    from other players in high-stakes dungeons.
-                  </p>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                >
-                  <h3 className="text-2xl font-bold">Skill-based Progression</h3>
-                  <p className="text-gray-300">
-                    Develop your character's abilities through working out in
-                    REAL LIFE.
-                  </p>
-                </motion.div>
-              </div>
-            </div>
-          </div>
-        </section>
+
 
         {/* Signup Section */}
         <section
           id="signup"
+          ref={signupRef}
           className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-purple-900 via-indigo-800 to-blue-900"
         >
           <div className="container px-4 md:px-6">
@@ -278,23 +276,25 @@ export default function Component() {
                 </p>
               </div>
               <div className="w-full max-w-sm space-y-2">
-                <form onSubmit={handleSubmit} className="flex space-x-2">
-                  <Input
-                    className="flex-grow bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                    placeholder="Enter your email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                  <Button
-                    type="submit"
-                    className="bg-purple-600 text-white hover:bg-purple-700"
-                  >
-                    <Mail className="mr-2 h-4 w-4" />
-                    Sign Up
-                  </Button>
-                </form>
+              <form onSubmit={handleSubmit} className="flex space-x-2">
+                <Input
+                  className="flex-grow bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                  placeholder="Enter your email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={isSubmitting}
+                />
+                <Button
+                  type="submit"
+                  className="bg-purple-600 text-white hover:bg-purple-700"
+                  disabled={isSubmitting}
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  {isSubmitting ? 'Signing up...' : 'Sign Up'}
+                </Button>
+              </form>
               </div>
             </motion.div>
           </div>

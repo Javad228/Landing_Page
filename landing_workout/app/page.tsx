@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import emailjs from "emailjs-com";
+import emailjs from '@emailjs/browser';
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -21,27 +21,38 @@ export default function Component() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const signupRef = useRef<HTMLDivElement | null>(null);
+  const form = useRef<HTMLFormElement | null>(null);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    try {
-      await emailjs.send(
-        process.env.NEXT_PUBLIC_SERVICE_ID || "", // Fallback to empty string if undefined
-        process.env.NEXT_PUBLIC_TEMPLATE_ID || "",
-        { email },
-        process.env.NEXT_PUBLIC_USER_ID || ""
-      );
-      
-      alert("Thank you for signing up!");
-      setEmail("");
-    } catch (error) {
-      console.error("Failed to send email", error);
-    } finally {
+  
+    if (form.current) {
+      emailjs
+        .sendForm(
+          process.env.NEXT_PUBLIC_SERVICE_ID || "",  
+          process.env.NEXT_PUBLIC_TEMPLATE_ID || "",  
+          form.current,
+          {
+            publicKey: process.env.NEXT_PUBLIC_KEY || "",
+          }
+        )
+        .then(
+          () => {
+            console.log("SUCCESS!");
+            setIsSubmitting(false);
+          },
+          (error) => {
+            console.log("FAILED...", error.text);
+            setIsSubmitting(false);
+          }
+        );
+    } else {
+      console.error("Form reference is null.");
       setIsSubmitting(false);
     }
   };
+  
   
   const handleScrollToSignup = () => {
     signupRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -277,6 +288,7 @@ export default function Component() {
               </div>
               <div className="w-full max-w-md">
                 <form
+                  ref={form}
                   onSubmit={handleSubmit}
                   className="flex flex-col sm:flex-row items-center sm:space-x-4 space-y-4 sm:space-y-0 mt-6"
                 >

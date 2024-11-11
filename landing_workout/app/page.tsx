@@ -86,7 +86,11 @@ export default function Component() {
     <div className="relative flex flex-col min-h-screen bg-gray-900 text-white">
       {/* Success Popup */}
       {showPopup && (
-        <div className="fixed top-0 left-0 right-0 flex justify-center mt-4 z-50">
+        <div
+        className="fixed top-0 left-0 right-0 flex justify-center mt-4"
+        style={{ zIndex: 9999 }}
+      >
+      
           <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out animate-slide-in">
             🎉 Success! You&apos;ve signed up with {email}. Check your inbox for updates!
           </div>

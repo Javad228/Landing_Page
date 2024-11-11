@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 export default function Component() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const signupRef = useRef<HTMLDivElement | null>(null);
   const form = useRef<HTMLFormElement | null>(null);
   const [imageMoveUp, setImageMoveUp] = useState(470);
@@ -29,11 +30,14 @@ export default function Component() {
     setIsSubmitting(true);
   
     if (form.current) {
+      const formData = new FormData(form.current);
+      formData.append("user_email", email); // Append user's email to the form data
+
       emailjs
         .sendForm(
           process.env.NEXT_PUBLIC_SERVICE_ID || "",  
           process.env.NEXT_PUBLIC_TEMPLATE_ID || "",  
-          form.current,
+          formData,
           {
             publicKey: process.env.NEXT_PUBLIC_KEY || "",
           }
@@ -42,6 +46,9 @@ export default function Component() {
           () => {
             console.log("SUCCESS!");
             setIsSubmitting(false);
+            setShowPopup(true); // Show success popup
+            setEmail(""); // Reset email field
+            setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
           },
           (error) => {
             console.log("FAILED...", error.text);
@@ -69,7 +76,6 @@ export default function Component() {
   );
 
   useEffect(() => {
-    // Check window size only in the client
     const updateImageMoveUp = () => {
       if (window.innerWidth >= 1024 && window.innerWidth < 1380) {
         setImageMoveUp(265);
@@ -87,6 +93,15 @@ export default function Component() {
 
   return (
     <div className="relative flex flex-col min-h-screen bg-gray-900 text-white">
+      {/* Success Popup */}
+      {showPopup && (
+        <div className="fixed top-0 left-0 right-0 flex justify-center mt-4 z-50">
+          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out animate-slide-in">
+            🎉 Success! You've signed up with {email}. Check your inbox for updates!
+          </div>
+        </div>
+      )}
+
       {/* Floating Phone Container */}
       <div className="fixed bottom-10 right-10 lg:w-[250px] lg:h-[500px] z-50 hidden md:block md:w-[150px] md:h-[300px]">
         {/* Phone Mockup */}
@@ -110,7 +125,7 @@ export default function Component() {
           </div>
         </div>
       </div>
-
+      
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 px-4 lg:px-6 h-16 flex items-center border-b border-gray-800 bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-md z-50">
         <Link className="flex items-center justify-center" href="#">
@@ -299,6 +314,7 @@ export default function Component() {
                   <Input
                     className="flex-grow bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-purple-500"
                     placeholder="Enter your email"
+                    name="message"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

@@ -29,37 +29,28 @@ export default function Component() {
     e.preventDefault();
     setIsSubmitting(true);
   
-    if (form.current) {
-      const formData = new FormData(form.current);
-      formData.append("user_email", email); // Append user's email to the form data
-
-      emailjs
-        .sendForm(
-          process.env.NEXT_PUBLIC_SERVICE_ID || "",  
-          process.env.NEXT_PUBLIC_TEMPLATE_ID || "",  
-          formData,
-          {
-            publicKey: process.env.NEXT_PUBLIC_KEY || "",
-          }
-        )
-        .then(
-          () => {
-            console.log("SUCCESS!");
-            setIsSubmitting(false);
-            setShowPopup(true); // Show success popup
-            setEmail(""); // Reset email field
-            setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
-          },
-          (error) => {
-            console.log("FAILED...", error.text);
-            setIsSubmitting(false);
-          }
-        );
-    } else {
-      console.error("Form reference is null.");
-      setIsSubmitting(false);
-    }
+    emailjs
+      .send(
+        process.env.NEXT_PUBLIC_SERVICE_ID || "",  
+        process.env.NEXT_PUBLIC_TEMPLATE_ID || "",  
+        { message: email },  // Sending the email as the message
+        process.env.NEXT_PUBLIC_KEY || ""
+      )
+      .then(
+        () => {
+          console.log("SUCCESS!");
+          setIsSubmitting(false);
+          setShowPopup(true); // Show success popup
+          setEmail(""); // Reset email field
+          setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
+        },
+        (error) => {
+          console.log("FAILED...", error.text);
+          setIsSubmitting(false);
+        }
+      );
   };
+  
   
   const handleScrollToSignup = () => {
     signupRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -97,7 +88,7 @@ export default function Component() {
       {showPopup && (
         <div className="fixed top-0 left-0 right-0 flex justify-center mt-4 z-50">
           <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out animate-slide-in">
-            Success! You've signed up with {email}. Check your inbox for updates!
+            🎉 Success! You&apos;ve signed up with {email}. Check your inbox for updates!
           </div>
         </div>
       )}
@@ -125,7 +116,7 @@ export default function Component() {
           </div>
         </div>
       </div>
-
+      
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 px-4 lg:px-6 h-16 flex items-center border-b border-gray-800 bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-md z-50">
         <Link className="flex items-center justify-center" href="#">

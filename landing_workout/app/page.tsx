@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import emailjs from '@emailjs/browser';
 import Image from "next/image";
@@ -22,6 +22,7 @@ export default function Component() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const signupRef = useRef<HTMLDivElement | null>(null);
   const form = useRef<HTMLFormElement | null>(null);
+  const [imageMoveUp, setImageMoveUp] = useState(470);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,33 +54,36 @@ export default function Component() {
     }
   };
   
-  
   const handleScrollToSignup = () => {
     signupRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Parallax effect using Framer Motion
+  // Adjust the parallax effect for the image inside the phone
   const { scrollY } = useScroll();
-
-  // Adjust the parallax effect
-  let imageMoveUp = 470;
-  console.log(window.innerWidth);
-  if (window.innerWidth >= 1024 && window.innerWidth < 1380) {
-      imageMoveUp = 265; 
-  } else if (window.innerWidth < 1024) {
-      imageMoveUp = 200;
-  }
-  
-  console.log(imageMoveUp)
   const scrollRangeStart = 0;
   const scrollRangeEnd = 1000;
-
-  // Create the parallax effect for the image inside the phone
   const y = useTransform(
     scrollY,
     [scrollRangeStart, scrollRangeEnd],
     [0, -imageMoveUp]
   );
+
+  useEffect(() => {
+    // Check window size only in the client
+    const updateImageMoveUp = () => {
+      if (window.innerWidth >= 1024 && window.innerWidth < 1380) {
+        setImageMoveUp(265);
+      } else if (window.innerWidth < 1024) {
+        setImageMoveUp(200);
+      } else {
+        setImageMoveUp(470);
+      }
+    };
+
+    updateImageMoveUp();
+    window.addEventListener("resize", updateImageMoveUp);
+    return () => window.removeEventListener("resize", updateImageMoveUp);
+  }, []);
 
   return (
     <div className="relative flex flex-col min-h-screen bg-gray-900 text-white">

@@ -67,7 +67,15 @@ export default function Component() {
   const { scrollY } = useScroll();
 
   // Adjust the parallax effect
-  const imageMoveUp = 370;
+  let imageMoveUp = 470;
+  console.log(window.innerWidth);
+  if (window.innerWidth >= 1024 && window.innerWidth < 1380) {
+      imageMoveUp = 265; 
+  } else if (window.innerWidth < 1024) {
+      imageMoveUp = 200;
+  }
+  
+  console.log(imageMoveUp)
   const scrollRangeStart = 0;
   const scrollRangeEnd = 1000;
 
@@ -81,7 +89,7 @@ export default function Component() {
   return (
     <div className="relative flex flex-col min-h-screen bg-gray-900 text-white">
       {/* Floating Phone Container */}
-      <div className="fixed bottom-10 right-10 w-[250px] h-[500px] z-50 hidden md:block lg:w-[200px] lg:h-[400px]">
+      <div className="fixed bottom-10 right-10 lg:w-[250px] lg:h-[500px] z-50 hidden md:block md:w-[150px] md:h-[300px]">
         {/* Phone Mockup */}
         <div className="relative w-full h-full bg-black rounded-[40px] border-8 border-gray-800 shadow-2xl">
           {/* Notch */}

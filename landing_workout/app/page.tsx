@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import emailjs from "emailjs-com";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -21,43 +22,27 @@ export default function Component() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const signupRef = useRef<HTMLDivElement | null>(null);
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(
-        "https://formsubmit.co/loggerwork3@gmail.com",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            email: email,
-            subject: "New FitQuest RPG Signup!",
-            message: `New signup from: ${email}`,
-          }),
-        }
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_SERVICE_ID || "", // Fallback to empty string if undefined
+        process.env.NEXT_PUBLIC_TEMPLATE_ID || "",
+        { email },
+        process.env.NEXT_PUBLIC_USER_ID || ""
       );
-
-      if (response.ok) {
-        setEmail("");
-        alert(
-          "Thanks for signing up! We'll notify you when the game launches and send you exclusive gifts!"
-        );
-      } else {
-        throw new Error("Failed to submit");
-      }
+      
+      alert("Thank you for signing up!");
+      setEmail("");
     } catch (error) {
-      console.error("Error:", error);
-      alert("Sorry, there was an error signing up. Please try again.");
+      console.error("Failed to send email", error);
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  
   const handleScrollToSignup = () => {
     signupRef.current?.scrollIntoView({ behavior: "smooth" });
   };

@@ -81,7 +81,7 @@ export default function Component() {
   return (
     <div className="relative flex flex-col min-h-screen bg-gray-900 text-white">
       {/* Floating Phone Container */}
-      <div className="fixed bottom-10 right-10 w-[200px] h-[400px] z-50 hidden md:block">
+      <div className="fixed bottom-10 right-10 w-[250px] h-[500px] z-50 hidden md:block">
         {/* Phone Mockup */}
         <div className="relative w-full h-full bg-black rounded-[40px] border-8 border-gray-800 shadow-2xl">
           {/* Notch */}

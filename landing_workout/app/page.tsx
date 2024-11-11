@@ -1,5 +1,4 @@
 "use client";
-import { Analytics } from "@vercel/analytics/react"
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
@@ -138,7 +137,6 @@ export default function Component() {
 
       {/* Main content */}
       <main className="flex-1 mt-16">
-      <Analytics />
         {/* Hero Section */}
         <section className="relative w-full py-20 md:py-32 lg:py-48 bg-gradient-to-br from-purple-700 via-indigo-800 to-blue-900 overflow-hidden">
           {/* Background Particles */}

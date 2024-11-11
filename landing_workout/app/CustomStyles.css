@@ -1,0 +1,15 @@
+@media (min-width: 768px) and (max-width: 1404px) {
+    .custom-size {
+      width: 180px;
+      height: 350px;
+    }
+}
+
+@media (min-width: 1404px) {
+    .custom-size {
+      width: 250px;
+      height: 500px;
+    }
+}
+  
+  

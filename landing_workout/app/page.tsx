@@ -1,4 +1,5 @@
 "use client";
+import './CustomStyles.css';
 import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import emailjs from '@emailjs/browser';
@@ -67,9 +68,10 @@ export default function Component() {
   );
 
   useEffect(() => {
+    console.log(window.innerWidth)
     const updateImageMoveUp = () => {
       if (window.innerWidth >= 1024 && window.innerWidth < 1380) {
-        setImageMoveUp(265);
+        setImageMoveUp(335);
       } else if (window.innerWidth < 1024) {
         setImageMoveUp(200);
       } else {
@@ -98,8 +100,8 @@ export default function Component() {
       )}
 
       {/* Floating Phone Container */}
-      <div className="fixed bottom-10 right-10 lg:w-[250px] lg:h-[500px] z-50 hidden md:block md:w-[150px] md:h-[300px]">
-        {/* Phone Mockup */}
+      <div className="fixed bottom-10 right-10 z-50 hidden md:block custom-size">
+      {/* Phone Mockup */}
         <div className="relative w-full h-full bg-black rounded-[40px] border-8 border-gray-800 shadow-2xl">
           {/* Notch */}
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-5 bg-gray-800 rounded-b-lg"></div>

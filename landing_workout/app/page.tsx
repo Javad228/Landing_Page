@@ -262,6 +262,43 @@ export default function Component() {
             </div>
           </div>
         </section>
+        <section className="w-full py-16 md:py-24 lg:py-32 bg-gray-800">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <div className="w-full md:w-1/3 mb-8 md:mb-0">
+                <div className="relative w-64 h-[500px] mx-auto">
+                  <div className="absolute inset-0 bg-black rounded-[40px] border-8 border-gray-700 shadow-2xl overflow-hidden">
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-22 h-5 bg-gray-700 rounded-b-lg"></div>
+                    <Image
+                      src="/images/demo.png"
+                      alt="Dungeon Actions"
+                      width={400}
+                      height={800}
+                      className="w-full h-full object-contain rounded-[32px]"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="w-full md:w-2/3 md:pl-8">
+                <h2 className="text-4xl font-bold mb-6 text-white">Dungeon Actions</h2>
+                <ul className="space-y-4">
+                  {['Pickpocket', 'Trade', 'Assassinate', 'Team up'].map((action, index) => (
+                    <li key={index} className="flex items-center">
+                      <ArrowRight className="h-6 w-6 text-purple-500 mr-2" />
+                      <span className="text-lg text-gray-200">{action}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-6 text-gray-300">
+                  Engage in various actions within the dungeon to progress your character, 
+                  acquire loot, and interact with other players. Each action presents unique 
+                  opportunities and risks.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
 
         {/* Signup Section */}
         <section

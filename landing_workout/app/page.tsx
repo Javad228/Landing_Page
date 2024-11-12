@@ -195,6 +195,22 @@ export default function Component() {
             </motion.div>
           </div>
         </section>
+        <div className="block md:hidden container mx-auto px-4 mb-10 mt-10">
+          <div className="relative w-64 h-[500px] mx-auto">
+            <div className="absolute inset-0 bg-black rounded-[40px] border-8 border-gray-700 shadow-2xl overflow-hidden">
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-22 h-5 bg-gray-700 rounded-b-lg"></div>
+              <div className="overflow-y-auto h-full">
+                <Image
+                  src="/images/Screenshot.jpg"
+                  alt="App Screenshot"
+                  width={250}
+                  height={700}
+                  className="w-full h-auto object-contain rounded-[32px]"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Features Section */}
         <section
